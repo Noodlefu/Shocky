@@ -1,0 +1,25 @@
+[
+    {
+        "Author": "Conina Rincewind",
+        "Name": "Shocky",
+        "Punchline": "Shockingly good fun.",
+        "Description": "A plugin that works with PiShock.",
+        "AssemblyVersion": "0.1",
+        "InternalName": "Shocky",
+        "RepoUrl": "https://github.com/Noodlefu/Shocky",
+        "ApplicableVersion": "any",
+        "IsHide": "False",
+        "IsTestingExclusive": "False",
+        "DownloadCount": 0,
+        "LastUpdate": 0,
+        "LoadPriority": 0,
+        "DownloadLinkInstall": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
+        "DownloadLinkTesting": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
+        "DownloadLinkUpdate": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
+        "Tags": [
+            "PiShock",
+            "shock",
+            "Conina"
+        ]
+    }
+]
