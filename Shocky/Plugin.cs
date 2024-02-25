@@ -76,10 +76,8 @@ namespace Shocky
 
             try
             {
-                var response = await client.PostAsync("", content); // Use the relative URI
-
-                var result = await response.Content.ReadAsStringAsync();
-                DalamudApi.Log?.Debug(result);
+                var response = await client.PostAsync("", content);
+                DalamudApi.Log?.Debug($"HTTP request code: {response.StatusCode}");
             }
             catch (HttpRequestException ex)
             {
