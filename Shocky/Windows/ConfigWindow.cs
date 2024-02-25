@@ -33,27 +33,25 @@ public class ConfigWindow : Window, IDisposable
         ImGui.Spacing();
         ImGui.Indent(30);
         var apiKey = configuration.ApiKey;
-        if (ImGui.InputTextWithHint("ApiKey", "ApiKey, found on your pishock profile", ref apiKey, 255))
+        if (ImGui.InputText("ApiKey", ref apiKey, 255))
         {
             configuration.ApiKey = apiKey;
         }
         var username = configuration.ShockUsername;
-        if (ImGui.InputTextWithHint("Username", "The username used on Pishock, case sensitive", ref username, 255))
+        if (ImGui.InputText("Username", ref username, 255))
         {
             configuration.ShockUsername = username;
         }
         ImGui.Spacing();
         var shockCode = configuration.ShockerCode;
-        if (ImGui.InputTextWithHint("Code", "Code for the shocker you want controlled, can be generated on the pishock page", ref shockCode, 255))
+        if (ImGui.InputText("Code", ref shockCode, 255))
         {
             configuration.ShockerCode = shockCode;
         }
         ImGui.Unindent(30);
 
-        //Part for the listener
-
         ImGui.BeginGroup();
-        ImGui.Text("Listen to the triggers on :");
+        ImGui.Text("Listen to the triggers on:");
         ImGui.Indent(30);
 
         foreach (var chatEntry in (XivChatType[])Enum.GetValues(typeof(XivChatType)))

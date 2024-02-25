@@ -4,6 +4,9 @@
   "Punchline": "Shockingly good fun.",
   "Description": "A plugin that works with PiShock.",
   "ApplicableVersion": "any",
+  "DownloadLinkInstall": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
+  "DownloadLinkTesting": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
+  "DownloadLinkUpdate": "https://github.com/Noodlefu/Shocky/releases/download/release/latest.zip",
   "Tags": [
     "PiShock",
     "shock",
