@@ -10,10 +10,9 @@ namespace Shocky
     public class Configuration : IPluginConfiguration
     {
         public int Version { get; set; } = 0;
-
         public string ApiKey { get; set; } = string.Empty;
-        public string ShockerCode { get; set; } = string.Empty;
-        public string ShockUsername { get; set; } = string.Empty;
+        public string Code { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
 
         public readonly List<Trigger> Triggers = [];
 

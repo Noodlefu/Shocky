@@ -4,7 +4,7 @@
         "Name": "Shocky",
         "Punchline": "Shockingly good fun.",
         "Description": "A plugin that works with PiShock.",
-        "AssemblyVersion": "0.1",
+        "AssemblyVersion": "0.0.0.2",
         "InternalName": "Shocky",
         "RepoUrl": "https://github.com/Noodlefu/Shocky",
         "ApplicableVersion": "any",

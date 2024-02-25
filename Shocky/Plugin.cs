@@ -4,7 +4,6 @@ using Shocky.Windows;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using System.Linq;
-using Dalamud.Game.Command;
 using System.Threading.Tasks;
 using System;
 using System.Net.Http;
@@ -43,17 +42,16 @@ namespace Shocky
                 return;
 
             var messageText = message.TextValue;
-
             var foundTrigger = Configuration.Triggers.FirstOrDefault(trigger => trigger.TriggerWord == messageText);
 
-            if (foundTrigger == null)
+            if (foundTrigger == null || foundTrigger.TriggerWord.Length == 0)
                 return;
 
             var shockRequest = new ShockRequest
             {
-                Username = Configuration.ShockUsername,
+                Username = Configuration.Username,
                 Name = "FFXIV Shocky",
-                Code = Configuration.ShockerCode,
+                Code = Configuration.Code,
                 Intensity = foundTrigger.Intensity,
                 Duration = foundTrigger.Duration,
                 ApiKey = Configuration.ApiKey,
@@ -65,27 +63,30 @@ namespace Shocky
             _ = PostJsonData(jsonContent);
         }
 
-        static async Task PostJsonData(string jsonContent)
+        private static async Task PostJsonData(string jsonContent)
         {
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("https://do.pishock.com/api/apioperate/");
+            using var client = new HttpClient
+            {
+                BaseAddress = new Uri("https://do.pishock.com/api/apioperate/")
+            };
+
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-            using (var content = new StringContent(jsonContent, Encoding.UTF8, "application/json"))
-            {
-                var response = await client.PostAsync("https://do.pishock.com/api/apioperate/", content);
+            using var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    DalamudApi.Log?.Debug(result);
-                }
-                else
-                {
-                    DalamudApi.Log?.Debug(response.StatusCode.ToString());
-                }
+            try
+            {
+                var response = await client.PostAsync("", content); // Use the relative URI
+
+                var result = await response.Content.ReadAsStringAsync();
+                DalamudApi.Log?.Debug(result);
+            }
+            catch (HttpRequestException ex)
+            {
+                DalamudApi.Log?.Debug($"HTTP request failed: {ex.Message}");
             }
         }
+
 
 
         public void Dispose()

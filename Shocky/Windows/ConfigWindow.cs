@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
@@ -25,7 +23,10 @@ public class ConfigWindow : Window, IDisposable
         configuration = plugin.Configuration;
     }
 
-    public void Dispose() { }
+    public void Dispose()
+    {
+        GC.SuppressFinalize(this);
+    }
 
     public override void Draw()
     {
@@ -37,16 +38,16 @@ public class ConfigWindow : Window, IDisposable
         {
             configuration.ApiKey = apiKey;
         }
-        var username = configuration.ShockUsername;
+        var username = configuration.Username;
         if (ImGui.InputText("Username", ref username, 255))
         {
-            configuration.ShockUsername = username;
+            configuration.Username = username;
         }
         ImGui.Spacing();
-        var shockCode = configuration.ShockerCode;
+        var shockCode = configuration.Code;
         if (ImGui.InputText("Code", ref shockCode, 255))
         {
-            configuration.ShockerCode = shockCode;
+            configuration.Code = shockCode;
         }
         ImGui.Unindent(30);
 
