@@ -22,15 +22,22 @@ namespace Shocky
 
         public ShockyPlugin(DalamudPluginInterface pluginInterface)
         {
+            Configuration = DalamudApi.PluginInterface?.GetPluginConfig() as Configuration ?? new Configuration();
+            ConfigWindow = new ConfigWindow(this);
+            InitializePlugin(pluginInterface);
+            SetupEventHandlers();
+        }
+
+        private void InitializePlugin(DalamudPluginInterface pluginInterface)
+        {
             DalamudApi.Initialize(this, pluginInterface);
             PluginInstance = this;
-            Configuration = DalamudApi.PluginInterface?.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(pluginInterface);
-
-            ConfigWindow = new ConfigWindow(this);
-
             windowSystem.AddWindow(ConfigWindow);
+        }
 
+        private void SetupEventHandlers()
+        {
             DalamudApi.PluginInterface!.UiBuilder.Draw += DrawUI;
             DalamudApi.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
             DalamudApi.ChatGui!.ChatMessage += Chat_OnChatMessage;
@@ -84,8 +91,6 @@ namespace Shocky
                 DalamudApi.Log?.Debug($"HTTP request failed: {ex.Message}");
             }
         }
-
-
 
         public void Dispose()
         {

@@ -15,10 +15,8 @@ namespace Shocky
         public string Username { get; set; } = string.Empty;
 
         public readonly List<Trigger> Triggers = [];
-
         public List<XivChatType> ChatListeners { get; set; } = [];
 
-        // the below exist just to make saving less cumbersome
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
 
@@ -29,7 +27,7 @@ namespace Shocky
 
         public void Save()
         {
-            pluginInterface!.SavePluginConfig(this);
+            pluginInterface?.SavePluginConfig(this);
         }
     }
 }
