@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin;
+using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
 using Shocky.Windows;
 using Dalamud.Game.Text;
@@ -9,20 +9,20 @@ using System;
 using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
+using Shocky.Classes;
 
 namespace Shocky
 {
-    public sealed class ShockyPlugin : IDalamudPlugin
+    public sealed class Shocky : IDalamudPlugin
     {
-        public static string Name => "Shocky";
-        public static ShockyPlugin? PluginInstance { get; private set; }
-        public Configuration Configuration { get; init; }
+        public static Shocky? Plugin { get; private set; }
+        public Configuration Config { get; init; }
         private readonly WindowSystem windowSystem = new("Shocky");
         private ConfigWindow ConfigWindow { get; init; }
 
-        public ShockyPlugin(DalamudPluginInterface pluginInterface)
+        public Shocky(DalamudPluginInterface pluginInterface)
         {
-            Configuration = DalamudApi.PluginInterface?.GetPluginConfig() as Configuration ?? new Configuration();
+            Config = DalamudApi.PluginInterface?.GetPluginConfig() as Configuration ?? new Configuration();
             ConfigWindow = new ConfigWindow(this);
             InitializePlugin(pluginInterface);
             SetupEventHandlers();
@@ -31,8 +31,8 @@ namespace Shocky
         private void InitializePlugin(DalamudPluginInterface pluginInterface)
         {
             DalamudApi.Initialize(this, pluginInterface);
-            PluginInstance = this;
-            Configuration.Initialize(pluginInterface);
+            Plugin = this;
+            Config.Initialize(pluginInterface);
             windowSystem.AddWindow(ConfigWindow);
         }
 
@@ -45,23 +45,25 @@ namespace Shocky
 
         private void Chat_OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
-            if (!Configuration.ChatListeners.Contains(type))
+            if (Config.Triggers.Count == 0 || Config.ChatListeners.Count == 0)
+                return;
+            if (!Config.ChatListeners.Contains(type))
                 return;
 
             var messageText = message.TextValue;
-            var foundTrigger = Configuration.Triggers.FirstOrDefault(trigger => trigger.TriggerWord == messageText);
+            var foundTrigger = Config.Triggers.FirstOrDefault(trigger => messageText.Contains(trigger.Phrase));
 
-            if (foundTrigger == null || foundTrigger.TriggerWord.Length == 0)
+            if (foundTrigger == null || foundTrigger.Phrase.Length == 0)
                 return;
 
-            var shockRequest = new ShockRequest
+            var shockRequest = new PiShockRequest
             {
-                Username = Configuration.Username,
+                Username = Config.Username,
                 Name = "FFXIV Shocky",
-                Code = Configuration.Code,
+                Code = Config.Code,
                 Intensity = foundTrigger.Intensity,
                 Duration = foundTrigger.Duration,
-                ApiKey = Configuration.ApiKey,
+                ApiKey = Config.ApiKey,
                 Op = foundTrigger.OperationType
             };
 

@@ -1,4 +1,4 @@
-namespace Shocky
+namespace Shocky.Classes
 {    
     public class DeviceInfo
     {

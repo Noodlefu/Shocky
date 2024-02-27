@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Linq;
 using System.Net.Http;
 using System.Numerics;
 using System.Text;
@@ -7,16 +8,16 @@ using Dalamud.Game.Text;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using Newtonsoft.Json;
+using Shocky.Classes;
 
 namespace Shocky.Windows
 {
     public class ConfigWindow : Window, IDisposable
     {
-        private readonly Configuration configuration;
-
+        private readonly Configuration config;
         private static DeviceInfo? DeviceInfo;
 
-        public ConfigWindow(ShockyPlugin plugin) : base("Config window", ImGuiWindowFlags.NoCollapse)
+        public ConfigWindow(Shocky plugin) : base("Config window", ImGuiWindowFlags.NoCollapse)
         {
             SizeConstraints = new WindowSizeConstraints
             {
@@ -24,7 +25,7 @@ namespace Shocky.Windows
                 MaximumSize = new Vector2(float.MaxValue, float.MaxValue)
             };
 
-            configuration = plugin.Configuration;
+            config = plugin.Config;
             GetDeviceData();
         }
 
@@ -32,14 +33,14 @@ namespace Shocky.Windows
 
         private void GetDeviceData()
         {
-            if (configuration.ApiKey.Length > 0 && configuration.Username.Length > 0 && configuration.Code.Length > 0)
+            if (config.ApiKey.Length > 0 && config.Username.Length > 0 && config.Code.Length > 0)
             {
-                var shockRequest = new ShockRequest
+                var shockRequest = new PiShockRequest
                 {
-                    Username = configuration.Username,
+                    Username = config.Username,
                     Name = "FFXIV Shocky",
-                    Code = configuration.Code,
-                    ApiKey = configuration.ApiKey,
+                    Code = config.Code,
+                    ApiKey = config.ApiKey,
                 };
 
                 var jsonContent = JsonConvert.SerializeObject(shockRequest);
@@ -57,7 +58,7 @@ namespace Shocky.Windows
 
             if (ImGui.Button("Save"))
             {
-                configuration.Save();
+                config.Save();
             }
         }
 
@@ -66,29 +67,35 @@ namespace Shocky.Windows
             if (ImGui.CollapsingHeader("Api Info"))
             {
                 ImGui.Indent(30);
-                var apiKey = configuration.ApiKey;
-                if (ImGui.InputText("ApiKey", ref apiKey, 255))
+                ImGui.Text("ApiKey");
+                ImGui.SameLine();
+                var apiKey = config.ApiKey;
+                if (ImGui.InputText("", ref apiKey, 255))
                 {
-                    configuration.ApiKey = apiKey;
+                    config.ApiKey = apiKey;
                     GetDeviceData();
                 }
-                var username = configuration.Username;
-                if (ImGui.InputText("Username", ref username, 255))
+                ImGui.Text("Username");
+                ImGui.SameLine();
+                var username = config.Username;
+                if (ImGui.InputText("", ref username, 255))
                 {
-                    configuration.Username = username;
+                    config.Username = username;
                     GetDeviceData();
                 }
-                var shockCode = configuration.Code;
-                if (ImGui.InputText("Code", ref shockCode, 255))
+                ImGui.Text("Code");
+                ImGui.SameLine();
+                var shockCode = config.Code;
+                if (ImGui.InputText("", ref shockCode, 255))
                 {
-                    configuration.Code = shockCode;
+                    config.Code = shockCode;
                     GetDeviceData();
                 }
                 ImGui.Unindent(30);
             }
         }
 
-        private void DrawDeviceInfo()
+        private static void DrawDeviceInfo()
         {
             if (DeviceInfo != null && ImGui.CollapsingHeader("Device Info"))
             {
@@ -122,7 +129,7 @@ namespace Shocky.Windows
                 {
                     if (IsExcludedChatType(chatEntry)) continue;
 
-                    var configValue = configuration.ChatListeners.Contains(chatEntry);
+                    var configValue = config.ChatListeners.Contains(chatEntry);
                     if (ImGui.Checkbox(chatEntry.ToString(), ref configValue))
                     {
                         ToggleChatListener(chatEntry, configValue);
@@ -136,14 +143,14 @@ namespace Shocky.Windows
         {
             if (ImGui.CollapsingHeader("Triggers"))
             {
-                foreach (var trigger in configuration.Triggers)
+                foreach (var trigger in config.Triggers.ToList())
                 {
                     DrawTrigger(trigger);
                 }
 
                 if (ImGui.Button("Add Trigger"))
                 {
-                    configuration.Triggers.Add(new Trigger());
+                    config.Triggers.Add(new Trigger());
                 }
             }
         }
@@ -152,17 +159,19 @@ namespace Shocky.Windows
         {
             ImGui.BeginGroup();
             ImGui.Indent(30);
-            //DrawRemoveButton(trigger);
-            var triggerWord = trigger.TriggerWord;
-            if (ImGui.InputText($"##Word{trigger.Id}", ref triggerWord, 100))
+            ImGui.Text("Phrase");
+            ImGui.SameLine();
+            var phrase = trigger.Phrase;
+            if (ImGui.InputText($"##Word{trigger.Id}", ref phrase, 100))
             {
-                trigger.TriggerWord = triggerWord;
+                trigger.Phrase = phrase;
             }
 
             ImGui.SameLine();
             if (ImGui.Button($"X##Rem{trigger.Id}"))
             {
-                configuration.Triggers.Remove(trigger);
+                config.Triggers.Remove(trigger);
+                DrawTriggers();
             }
 
             ImGui.Text("Operation Type");
@@ -232,30 +241,6 @@ namespace Shocky.Windows
             DeviceInfo = new DeviceInfo { error = $"HTTP request failed: {errorMessage}" };
         }
 
-        private static void DrawTextInput(string label, ref string value, Action? onChange = null)
-        {
-            if (ImGui.InputText(label, ref value, 255) && onChange != null)
-            {
-                onChange.Invoke();
-            }
-        }
-
-        private static void DrawTextInput(string label, ref int value)
-        {
-            ImGui.Text(label);
-            ImGui.SameLine();
-            ImGui.InputInt(label, ref value);
-        }
-
-        private void DrawRemoveButton(Trigger trigger)
-        {
-            ImGui.SameLine();
-            if (ImGui.Button($"X##Rem{trigger.Id}"))
-            {
-                configuration.Triggers.Remove(trigger);
-            }
-        }
-
         private static bool IsExcludedChatType(XivChatType chatEntry)
         {
             return chatEntry == XivChatType.None ||
@@ -280,11 +265,11 @@ namespace Shocky.Windows
         {
             if (configValue)
             {
-                configuration.ChatListeners.Add(chatEntry);
+                config.ChatListeners.Add(chatEntry);
             }
             else
             {
-                configuration.ChatListeners.Remove(chatEntry);
+                config.ChatListeners.Remove(chatEntry);
             }
         }
     }
