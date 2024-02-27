@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
@@ -70,7 +70,7 @@ namespace Shocky.Windows
                 ImGui.Text("ApiKey");
                 ImGui.SameLine();
                 var apiKey = config.ApiKey;
-                if (ImGui.InputText("", ref apiKey, 255))
+                if (ImGui.InputText("##ApiKey", ref apiKey, 255))
                 {
                     config.ApiKey = apiKey;
                     GetDeviceData();
@@ -78,7 +78,7 @@ namespace Shocky.Windows
                 ImGui.Text("Username");
                 ImGui.SameLine();
                 var username = config.Username;
-                if (ImGui.InputText("", ref username, 255))
+                if (ImGui.InputText("##Username", ref username, 255))
                 {
                     config.Username = username;
                     GetDeviceData();
@@ -86,7 +86,7 @@ namespace Shocky.Windows
                 ImGui.Text("Code");
                 ImGui.SameLine();
                 var shockCode = config.Code;
-                if (ImGui.InputText("", ref shockCode, 255))
+                if (ImGui.InputText("##Code", ref shockCode, 255))
                 {
                     config.Code = shockCode;
                     GetDeviceData();
