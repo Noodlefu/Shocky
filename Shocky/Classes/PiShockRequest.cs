@@ -8,6 +8,6 @@ namespace Shocky.Classes
         public int Intensity { get; set; }
         public int Duration { get; set; }
         public required string ApiKey { get; set; }
-        public int Op { get; set; }
+        public OperationType Op { get; set; }
     }
 }

@@ -174,12 +174,27 @@ namespace Shocky.Windows
                 DrawTriggers();
             }
 
-            ImGui.Text("Operation Type");
+            ImGui.Text("Operation");
             ImGui.SameLine();
             var operationType = trigger.OperationType;
-            if (ImGui.InputInt($"##OpType{trigger.Id}", ref operationType))
+
+            if (ImGui.BeginCombo($"##OpType{trigger.Id}", operationType.ToString()))
             {
-                trigger.OperationType = operationType;
+                foreach (OperationType value in Enum.GetValues(typeof(OperationType)))
+                {
+                    var isSelected = value == operationType;
+                    if (ImGui.Selectable(value.GetStringValue(), isSelected))
+                    {
+                        trigger.OperationType = value;
+                    }
+
+                    if (isSelected)
+                    {
+                        ImGui.SetItemDefaultFocus();
+                    }
+                }
+
+                ImGui.EndCombo();
             }
 
             ImGui.Text("Duration");

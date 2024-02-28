@@ -1,4 +1,4 @@
-using Dalamud.Plugin;
+﻿using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
 using Shocky.Windows;
 using Dalamud.Game.Text;
@@ -51,7 +51,9 @@ namespace Shocky
                 return;
 
             var messageText = message.TextValue;
-            var foundTrigger = Config.Triggers.FirstOrDefault(trigger => messageText.Contains(trigger.Phrase));
+            var foundTrigger = Config.Triggers
+                .OrderByDescending(trigger => trigger.Phrase.Length)
+                .FirstOrDefault(trigger => messageText.Contains(trigger.Phrase));
 
             if (foundTrigger == null || foundTrigger.Phrase.Length == 0)
                 return;
