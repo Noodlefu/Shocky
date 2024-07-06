@@ -1,4 +1,4 @@
-﻿using Dalamud.Plugin;
+using Dalamud.Plugin;
 using Dalamud.Interface.Windowing;
 using Shocky.Windows;
 using Dalamud.Game.Text;
@@ -20,7 +20,7 @@ namespace Shocky
         private readonly WindowSystem windowSystem = new("Shocky");
         private ConfigWindow ConfigWindow { get; init; }
 
-        public Shocky(DalamudPluginInterface pluginInterface)
+        public Shocky(IDalamudPluginInterface pluginInterface)
         {
             Config = DalamudApi.PluginInterface?.GetPluginConfig() as Configuration ?? new Configuration();
             ConfigWindow = new ConfigWindow(this);
@@ -28,7 +28,7 @@ namespace Shocky
             SetupEventHandlers();
         }
 
-        private void InitializePlugin(DalamudPluginInterface pluginInterface)
+        private void InitializePlugin(IDalamudPluginInterface pluginInterface)
         {
             DalamudApi.Initialize(this, pluginInterface);
             Plugin = this;
@@ -43,7 +43,7 @@ namespace Shocky
             DalamudApi.ChatGui!.ChatMessage += Chat_OnChatMessage;
         }
 
-        private void Chat_OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
+        private void Chat_OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
         {
             if (Config.Triggers.Count == 0 || Config.ChatListeners.Count == 0)
                 return;
@@ -88,11 +88,11 @@ namespace Shocky
             try
             {
                 var response = await client.PostAsync("", content);
-                DalamudApi.Log?.Debug($"HTTP request code: {response.StatusCode}");
+                DalamudApi.LogDebug($"HTTP request code: {response.StatusCode}");
             }
             catch (HttpRequestException ex)
             {
-                DalamudApi.Log?.Debug($"HTTP request failed: {ex.Message}");
+                DalamudApi.LogDebug($"HTTP request failed: {ex.Message}");
             }
         }
 

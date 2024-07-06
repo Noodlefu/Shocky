@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Numerics;
@@ -252,7 +252,7 @@ namespace Shocky.Windows
 
         private static void HandleHttpRequestFailure(string errorMessage)
         {
-            DalamudApi.Log?.Debug($"HTTP request failed: {errorMessage}");
+            DalamudApi.LogDebug($"HTTP request failed: {errorMessage}");
             DeviceInfo = new DeviceInfo { error = $"HTTP request failed: {errorMessage}" };
         }
 
